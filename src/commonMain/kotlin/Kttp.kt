@@ -9,11 +9,11 @@ class Kttp : KttpInterface {
     override var routeList = ArrayList<Route>()
 
     // Add route to list
-    fun route(path: String = "all", method: String = "GET", function: () -> String) {
+    fun route(path: String = "all", method: String = "GET", function: () -> ResponseObject) {
         routeList.add(Route(path, method, function))
     }
     // Add route with multiple methods
-    fun route(path: String = "all", methods: Array<String>, function: () -> String) {
+    fun route(path: String = "all", methods: Array<String>, function: () -> ResponseObject) {
         for (method in methods) {
             routeList.add(Route(path, method, function))
         }
