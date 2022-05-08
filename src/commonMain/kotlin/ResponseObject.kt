@@ -1,26 +1,21 @@
 // Object returned by route() function
-class ResponseObject(
-    // Type determines how server will respond to routes
-    var type: ResponseType,
-    var content: String
-) {
+class ResponseObject(var headers: ArrayList<String>, var body: String = "", var statusCode: String = "200 OK") {
     fun response(): String {
-        return when (type) {
-            ResponseType.Source -> content
-            ResponseType.File -> return readFile(content)
-        }
+        var output = "HTTP/1.1 $statusCode"
+        for (header in headers) output += "\n" + header
+        output += "\n$body"
+        return output
     }
 }
 
-enum class ResponseType {
-    Source, File
-}
-
 public fun source(content: String): ResponseObject {
-    return ResponseObject(ResponseType.Source, content)
+    return ResponseObject(arrayListOf("Content-Type: text/html"), content)
 }
 public fun file(content: String): ResponseObject {
-    return ResponseObject(ResponseType.File, content)
+    return ResponseObject(arrayListOf(""), content)
+}
+public fun redirect(content: String): ResponseObject {
+    return ResponseObject(arrayListOf("Location: $content"), "", "307 Temporary Redirect")
 }
 
 public expect fun readFile(name: String): String

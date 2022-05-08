@@ -51,8 +51,6 @@ internal actual interface KttpInterface {
                 val response = PrintWriter(withContext(Dispatchers.IO) {
                     client.getOutputStream()
                 }, true)
-                response.println("HTTP/1.1 200 OK")
-                response.println()
                 response.println(methodResponse(method, path, routeList))
 
                 withContext(Dispatchers.IO) {
