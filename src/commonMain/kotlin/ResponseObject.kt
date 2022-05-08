@@ -12,7 +12,7 @@ public fun source(content: String): ResponseObject {
     return ResponseObject(arrayListOf("Content-Type: text/html"), content)
 }
 public fun file(content: String): ResponseObject {
-    return ResponseObject(arrayListOf(""), content)
+    return ResponseObject(arrayListOf(""), readFile(content))
 }
 public fun redirect(content: String): ResponseObject {
     return ResponseObject(arrayListOf("Location: $content"), "", "307 Temporary Redirect")
