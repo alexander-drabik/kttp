@@ -9,7 +9,7 @@ class ResponseObject(var headers: ArrayList<String>, var body: String = "", var 
 }
 
 public fun source(content: String): ResponseObject {
-    return ResponseObject(arrayListOf("Content-Type: text/html"), content)
+    return ResponseObject(arrayListOf("Content-Type: text/html\n"), content)
 }
 public fun file(content: String): ResponseObject {
     return ResponseObject(arrayListOf(""), readFile(content))
