@@ -1,4 +1,4 @@
-// Object returned by route() function
+// Object for responding to HTML requests
 class ResponseObject(var headers: ArrayList<String>, var body: String = "", var statusCode: String = "200 OK") {
     fun response(): String {
         var output = "HTTP/1.1 $statusCode"
@@ -8,12 +8,17 @@ class ResponseObject(var headers: ArrayList<String>, var body: String = "", var 
     }
 }
 
+// Create HTML response from String
 public fun source(content: String): ResponseObject {
     return ResponseObject(arrayListOf("Content-Type: text/html\n"), content)
 }
+
+// Create HTML response from file
 public fun file(content: String): ResponseObject {
-    return ResponseObject(arrayListOf(""), readFile(content))
+    return ResponseObject(arrayListOf("Content-Type: text/html\n"), readFile(content))
 }
+
+// Create redirect from string
 public fun redirect(content: String): ResponseObject {
     return ResponseObject(arrayListOf("Location: $content"), "", "307 Temporary Redirect")
 }

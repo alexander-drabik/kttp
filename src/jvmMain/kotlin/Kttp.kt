@@ -15,10 +15,12 @@ internal actual interface KttpInterface {
     actual var routeList: ArrayList<Route>
 
     actual fun run(address: String, port: Int) {
+        // Start listening at given port and address
         val server = ServerSocket(port, 50, InetAddress.getByName(address))
         while (true) {
             val client = server.accept()
 
+            // Check client request inside coroutine, so other clients can connect at the same time
             GlobalScope.launch {
                 // Get request
                 val input = BufferedReader(InputStreamReader(withContext(Dispatchers.IO) {
@@ -48,11 +50,15 @@ internal actual interface KttpInterface {
                 }
 
                 // Send response
-                val response = PrintWriter(withContext(Dispatchers.IO) {
-                    client.getOutputStream()
-                }, true)
+                val response = PrintWriter(
+                    withContext(Dispatchers.IO) {
+                        client.getOutputStream()
+                    },
+                    true
+                )
                 response.println(methodResponse(method, path, routeList))
 
+                // End connection
                 withContext(Dispatchers.IO) {
                     client.close()
                 }
