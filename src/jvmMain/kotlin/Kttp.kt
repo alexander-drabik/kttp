@@ -9,7 +9,8 @@ import java.net.InetAddress
 import java.net.ServerSocket
 
 val methodRegex = """^\S+""".toRegex()
-val pathRegex   = """/\S*""".toRegex()
+val pathRegex   = """\w+\s(/[^\s?]*)\??(\S*)""".toRegex()
+val pathVariablesRegex = """&?([^&]+)=([^&]+)""".toRegex()
 
 internal actual interface KttpInterface {
     actual var routeList: ArrayList<Route>
@@ -40,7 +41,17 @@ internal actual interface KttpInterface {
                 }
 
                 // Find path
-                val path = pathRegex.find(line)?.value ?: ""
+                val entirePath = pathRegex.find(line)?.groups
+                val path = entirePath?.get(1)?.value.toString()
+
+                // Find path variables
+                val pathVariablesCombined = entirePath?.get(2)?.value.toString()
+                val pathVariables = HashMap<String, String>()
+                val matches = pathVariablesRegex.findAll(pathVariablesCombined)
+                for (match in matches) {
+                    if (match.groups.size != 3) continue
+                    pathVariables[match.groups[1]?.value.toString()] = match.groups[2]?.value.toString()
+                }
 
                 // Find request header
                 while (line.isNotBlank()) {
@@ -49,6 +60,11 @@ internal actual interface KttpInterface {
                     } ?: break
                 }
 
+                // Generate Request
+                val request = Request(
+                    pathVariables
+                )
+
                 // Send response
                 val response = PrintWriter(
                     withContext(Dispatchers.IO) {
@@ -56,7 +72,7 @@ internal actual interface KttpInterface {
                     },
                     true
                 )
-                response.println(methodResponse(method, path, routeList))
+                response.println(methodResponse(method, path, routeList, request))
 
                 // End connection
                 withContext(Dispatchers.IO) {
