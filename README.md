@@ -20,7 +20,7 @@ fun main() {
   val app = Kttp()
   
   app.route("/") {
-    // Respond with 'index.html' from resouces directory
+    // Respond with 'index.html' from resources directory
     return@route file("index.html")
   }
   
