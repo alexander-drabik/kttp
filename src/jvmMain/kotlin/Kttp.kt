@@ -8,9 +8,9 @@ import java.io.PrintWriter
 import java.net.InetAddress
 import java.net.ServerSocket
 
-val methodRegex = """^\S+""".toRegex()
-val pathRegex   = """\w+\s(/[^\s?]*)\??(\S*)""".toRegex()
-val pathVariablesRegex = """&?([^&]+)=([^&]+)""".toRegex()
+internal val methodRegex = """^\S+""".toRegex()
+internal val pathRegex   = """\w+\s(/[^\s?]*)\??(\S*)""".toRegex()
+internal val pathVariablesRegex = """&?([^&]+)=([^&]+)""".toRegex()
 
 internal actual interface KttpInterface {
     actual var routeList: ArrayList<Route>
