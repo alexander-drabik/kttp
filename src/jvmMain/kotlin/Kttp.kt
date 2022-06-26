@@ -32,28 +32,17 @@ internal actual interface KttpInterface {
                 } ?: String()
 
                 // Get request's method
-                val method = methodRegex.find(line)?.value
-                if (method == null) {
-                    withContext(Dispatchers.IO) {
-                        client.close()
-                    }
-                    return@launch
-                }
+                val method = methodRegex.find(line)?.value ?: ""
 
                 // Find path
                 val entirePath = pathRegex.find(line)?.groups
-                val path = entirePath?.get(1)?.value.toString()
+                val path = findPath(entirePath)
 
                 // Find path variables
                 val pathVariablesCombined = entirePath?.get(2)?.value.toString()
-                val pathVariables = HashMap<String, String>()
-                val matches = pathVariablesRegex.findAll(pathVariablesCombined)
-                for (match in matches) {
-                    if (match.groups.size != 3) continue
-                    pathVariables[match.groups[1]?.value.toString()] = match.groups[2]?.value.toString()
-                }
+                val pathVariables = findPathVariables(pathVariablesCombined)
 
-                // Find request header
+                // Find request headers
                 while (line.isNotBlank()) {
                     line = withContext(Dispatchers.IO) {
                         input.readLine()
@@ -80,5 +69,19 @@ internal actual interface KttpInterface {
                 }
             }
         }
+    }
+
+    private fun findPath(entirePath: MatchGroupCollection?): String {
+        return entirePath?.get(1)?.value.toString()
+    }
+
+    private fun findPathVariables(pathVariablesCombined: String): HashMap<String, String> {
+        val pathVariables = HashMap<String, String>()
+        val matches = pathVariablesRegex.findAll(pathVariablesCombined)
+        for (match in matches) {
+            if (match.groups.size != 3) continue
+            pathVariables[match.groups[1]?.value.toString()] = match.groups[2]?.value.toString()
+        }
+        return pathVariables
     }
 }

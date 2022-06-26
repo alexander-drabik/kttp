@@ -1,8 +1,8 @@
 // Object for responding to HTML requests
 class ResponseObject(var headers: ArrayList<String>, var body: String = "", var statusCode: String = "200 OK") {
     fun response(): String {
-        var output = "HTTP/1.1 $statusCode"
-        for (header in headers) output += "\n" + header
+        var output = "HTTP/1.1 $statusCode\n"
+        for (header in headers) output += header + '\n'
         output += "\n$body"
         return output
     }
@@ -10,12 +10,12 @@ class ResponseObject(var headers: ArrayList<String>, var body: String = "", var 
 
 // Create HTML response from String
 public fun source(content: String): ResponseObject {
-    return ResponseObject(arrayListOf("Content-Type: text/html\n"), content)
+    return ResponseObject(arrayListOf("Content-Type: text/html"), content)
 }
 
 // Create HTML response from file
 public fun file(content: String): ResponseObject {
-    return ResponseObject(arrayListOf("Content-Type: text/html\n"), readFile(content))
+    return ResponseObject(arrayListOf("Content-Type: text/html"), readFile(content))
 }
 
 // Create redirect from string
