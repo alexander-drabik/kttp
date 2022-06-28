@@ -1,4 +1,13 @@
+import java.awt.image.BufferedImageOp
+import java.io.BufferedOutputStream
+import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.io.OutputStream
+import java.io.OutputStreamWriter
 import java.nio.file.Files
+import javax.imageio.ImageIO
 import kotlin.io.path.Path
 
 // Read file's content from resources folder
@@ -13,6 +22,7 @@ actual fun file(name: String, chunkSize: Int): ResponseObject {
     val responseObject = ResponseObject()
     when (extension) {
         "html" -> responseObject.headers.add("Content-Type: text/html")
+        "png"  -> responseObject.headers.add("Content-Type: image/png")
     }
 
     // Get file size and put it into header
@@ -21,7 +31,11 @@ actual fun file(name: String, chunkSize: Int): ResponseObject {
 
     // Ad body to response object
     // TODO send by small chunks later
-    responseObject.body = readFile(name)
+    val bufferedImageIO = ImageIO.read(File("src/main/resources/$name"))
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    ImageIO.write(bufferedImageIO, extension, byteArrayOutputStream)
+    val bytes = byteArrayOutputStream.toByteArray()
+    responseObject.bodyByteArray = bytes
 
     return responseObject
 }

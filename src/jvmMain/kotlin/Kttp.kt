@@ -3,6 +3,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
+import java.io.DataOutputStream
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.InetAddress
@@ -61,8 +62,14 @@ internal actual interface KttpInterface {
                     },
                     true
                 )
-                response.println(methodResponse(method, path, routeList, request))
-
+                val pair = methodResponse(method, path, routeList, request)
+                response.println(pair.first)
+                val dataOutputStream = DataOutputStream(withContext(Dispatchers.IO) {
+                    client.getOutputStream()
+                })
+                withContext(Dispatchers.IO) {
+                    dataOutputStream.write(pair.second)
+                }
                 // End connection
                 withContext(Dispatchers.IO) {
                     client.close()

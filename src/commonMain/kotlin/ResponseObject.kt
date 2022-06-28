@@ -1,10 +1,10 @@
 // Object for responding to HTML requests
 class ResponseObject(var headers: ArrayList<String> = ArrayList(), var body: String = "", var statusCode: String = "200 OK") {
-    fun response(): String {
+    var bodyByteArray: ByteArray? = null
+    fun response(): Pair<String, ByteArray> {
         var output = "HTTP/1.1 $statusCode\n"
         for (header in headers) output += header + '\n'
-        output += "\n$body"
-        return output
+        return Pair(output, bodyByteArray ?: body.encodeToByteArray())
     }
 }
 
